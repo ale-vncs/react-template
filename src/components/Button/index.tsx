@@ -1,13 +1,11 @@
-import React from "react";
+import React from 'react';
 
 interface Props {
-  name: string
+  name: string;
 }
 
 const Button = (props: Props): JSX.Element => {
-  return (
-    <input type={'button'} value={props.name}/>
-  )
-}
+  return <input type={'button'} value={props.name} />;
+};
 
-export default Button
+export default Button;
