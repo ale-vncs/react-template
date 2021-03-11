@@ -1,8 +1,12 @@
 import React from "react";
+import Button from '@components/Button'
 import ReactDOM from "react-dom";
 
 const App = () => (
-  <h1>My React andd TypeScript App!</h1>
+  <>
+    <Button name={'Aperte'}/>
+    <h1>My React and TypeScript App!</h1>
+  </>
 );
 
 ReactDOM.render(
