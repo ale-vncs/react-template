@@ -16,6 +16,9 @@ const config: webpack.Configuration = {
     port: 4000,
     open: true,
     hot: true
+  },
+  optimization: {
+    usedExports: true
   }
 }
 

@@ -6,6 +6,7 @@ import webpackCommonConfig from './webpack.common.config'
 const config: webpack.Configuration = {
   ...webpackCommonConfig,
   mode: 'production',
+  devtool: 'source-map',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: '[name].[contenthash].js',
