@@ -5,7 +5,11 @@
   "scripts": {
     "start": "webpack serve --config webpack.dev.config.ts",
     "build": "webpack --config webpack.prod.config.ts",
-    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
+    "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
+    "prettier": "prettier --check .",
+    "prettier:fix": "prettier --write .",
+    "lib:upgrade": "yarn upgrade-interactive"
   },
   "keywords": [],
   "author": "",
@@ -21,10 +25,8 @@
     "@babel/preset-react": "^7.12.13",
     "@babel/preset-typescript": "^7.13.0",
     "@babel/runtime": "^7.13.10",
-    "@types/fork-ts-checker-webpack-plugin": "^0.4.5",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.2",
-    "@types/webpack": "^4.41.26",
     "@types/webpack-dev-server": "^3.11.2",
     "@typescript-eslint/eslint-plugin": "^4.17.0",
     "@typescript-eslint/parser": "^4.17.0",
@@ -40,7 +42,7 @@
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-webpack-plugin": "^2.5.2",
-    "fork-ts-checker-webpack-plugin": "^6.1.1",
+    "fork-ts-checker-webpack-plugin": "^6.2.10",
     "html-webpack-plugin": "^5.3.1",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
