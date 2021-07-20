@@ -2,21 +2,22 @@ import path from 'path'
 import webpack from 'webpack'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import webpackCommonConfig from './webpack.common.config'
+import merge from 'webpack-merge'
 
-const config: webpack.Configuration = {
-  ...webpackCommonConfig,
+const config: webpack.Configuration = merge(webpackCommonConfig('production'), {
   mode: 'production',
+  bail: true,
   devtool: 'source-map',
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: '[name].[contenthash].js',
-    publicPath: ''
+    filename: 'static/js/[name].[contenthash:8].js',
+    assetModuleFilename: 'images/[hash][ext][query]',
+    clean: true
   },
-  plugins: [new CleanWebpackPlugin()]
-}
-
-if (config.plugins && webpackCommonConfig.plugins) {
-  config.plugins.push(...webpackCommonConfig.plugins)
-}
+  plugins: [new CleanWebpackPlugin()],
+  optimization: {
+    minimize: true
+  }
+})
 
 export default config

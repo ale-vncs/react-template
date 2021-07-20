@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Button from '@components/Button'
 import ReactDOM from 'react-dom'
 
 const App = () => {
-  console.log('ff')
   return (
     <>
       <Button name={'Aperte'} />
       <h1>My React and TypeScript App!</h1>
       <h1>mode: {process.env.NODE_ENV}</h1>
+      <h1>api: {process.env.ENV_API}</h1>
     </>
   )
 }
