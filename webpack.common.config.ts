@@ -4,16 +4,14 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import ESLintPlugin from 'eslint-webpack-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
 import { alias } from './alias.config'
-import dotenv from 'dotenv'
+import webpackEnv from './webpack.env.config'
 
 const config = (env: 'development' | 'production'): webpack.Configuration => {
-  const dotenvParseOutput = dotenv.config().parsed
-  const publicUrl = dotenvParseOutput?.PUBLIC_URL || ''
-
+  const isDev = env === 'development'
   return {
     entry: './src/index.tsx',
     output: {
-      publicPath: publicUrl
+      publicPath: webpackEnv.PUBLIC_URL
     },
     module: {
       rules: [
@@ -23,6 +21,8 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
           use: {
             loader: 'babel-loader',
             options: {
+              cacheDirectory: true,
+              babelrc: false,
               presets: [
                 '@babel/preset-env',
                 '@babel/preset-typescript',
@@ -32,7 +32,17 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
                     runtime: 'automatic'
                   }
                 ]
-              ]
+              ],
+              plugins: [
+                '@babel/plugin-proposal-class-properties',
+                isDev && require.resolve('react-refresh/babel'),
+                [
+                  '@babel/plugin-transform-runtime',
+                  {
+                    regenerator: true
+                  }
+                ]
+              ].filter(Boolean)
             }
           }
         },
@@ -69,11 +79,16 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
       new webpack.DefinePlugin({
         'process.env': JSON.stringify({
           NODE_ENV: env,
-          ...dotenv.config().parsed,
-          PUBLIC_URL: publicUrl
+          ...webpackEnv
         })
       })
-    ]
+    ],
+    performance: {
+      hints: false
+    },
+    optimization: {
+      emitOnErrors: true
+    }
   }
 }
 

@@ -11,12 +11,20 @@ const config: webpack.Configuration = merge(webpackCommonConfig('production'), {
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'static/js/[name].[contenthash:8].js',
-    assetModuleFilename: 'images/[hash][ext][query]',
     clean: true
   },
-  plugins: [new CleanWebpackPlugin()],
+  plugins: [
+    new CleanWebpackPlugin(),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/
+    })
+  ],
   optimization: {
-    minimize: true
+    minimize: true,
+    runtimeChunk: {
+      name: (entrypoint: any) => `runtimechunk~${entrypoint.name}`
+    }
   }
 })
 
