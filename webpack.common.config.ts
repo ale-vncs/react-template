@@ -3,7 +3,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import ESLintPlugin from 'eslint-webpack-plugin'
 import CopyPlugin from 'copy-webpack-plugin'
-import { alias } from './alias.config'
+import { alias } from './webpack.alias.config'
 import webpackEnv from './webpack.env.config'
 
 const config = (env: 'development' | 'production'): webpack.Configuration => {
