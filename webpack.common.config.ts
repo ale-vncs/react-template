@@ -2,7 +2,6 @@ import webpack from 'webpack'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import ESLintPlugin from 'eslint-webpack-plugin'
-import CopyPlugin from 'copy-webpack-plugin'
 import { alias } from './webpack.alias.config'
 import webpackEnv from './webpack.env.config'
 
@@ -16,7 +15,7 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
     module: {
       rules: [
         {
-          test: /\.(ts|js)x?$/i,
+          test: /\.(ts|js)x?$/,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
@@ -24,8 +23,14 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
               cacheDirectory: true,
               babelrc: false,
               presets: [
-                '@babel/preset-env',
                 '@babel/preset-typescript',
+                [
+                  '@babel/preset-env',
+                  {
+                    useBuiltIns: 'usage',
+                    corejs: 3
+                  }
+                ],
                 [
                   '@babel/preset-react',
                   {
@@ -34,14 +39,9 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
                 ]
               ],
               plugins: [
+                '@babel/plugin-proposal-object-rest-spread',
                 '@babel/plugin-proposal-class-properties',
-                isDev && require.resolve('react-refresh/babel'),
-                [
-                  '@babel/plugin-transform-runtime',
-                  {
-                    regenerator: true
-                  }
-                ]
+                isDev && require.resolve('react-refresh/babel')
               ].filter(Boolean)
             }
           }
@@ -51,27 +51,42 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
           use: ['style-loader', 'css-loader']
         },
         {
-          test: /\.(png|jpe?g|gif|svg|txt|json)$/i,
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
           type: 'asset/resource'
+        },
+        {
+          test: /\.json$/i,
+          loader: 'json5-loader',
+          type: 'javascript/auto'
         }
       ]
     },
     resolve: {
-      extensions: ['.tsx', '.ts', '.js'],
+      extensions: ['.tsx', '.ts', '.js', '.jsx'],
       alias: alias,
       fallback: {
         net: false
       }
     },
+    ignoreWarnings: [
+      {
+        module: /react-icons/
+      }
+    ],
     plugins: [
       new HtmlWebpackPlugin({
-        template: 'src/index.html'
+        template: 'src/index.html',
+        inject: true
       }),
       new ForkTsCheckerWebpackPlugin({
+        typescript: {
+          mode: 'write-references',
+          diagnosticOptions: {
+            semantic: true,
+            syntactic: true
+          }
+        },
         async: false
-      }),
-      new CopyPlugin({
-        patterns: [{ from: 'src/assets', to: 'assets' }]
       }),
       new ESLintPlugin({
         extensions: ['js', 'jsx', 'ts', 'tsx']
@@ -87,7 +102,18 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
       hints: false
     },
     optimization: {
-      emitOnErrors: true
+      emitOnErrors: true,
+      moduleIds: 'deterministic',
+      runtimeChunk: 'single',
+      splitChunks: {
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all'
+          }
+        }
+      }
     }
   }
 }

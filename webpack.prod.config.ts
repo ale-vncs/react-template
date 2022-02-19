@@ -21,10 +21,7 @@ const config: webpack.Configuration = merge(webpackCommonConfig('production'), {
     })
   ],
   optimization: {
-    minimize: true,
-    runtimeChunk: {
-      name: (entrypoint: any) => `runtimechunk~${entrypoint.name}`
-    }
+    minimize: true
   }
 })
 
