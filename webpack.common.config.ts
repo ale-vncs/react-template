@@ -24,13 +24,7 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
               babelrc: false,
               presets: [
                 '@babel/preset-typescript',
-                [
-                  '@babel/preset-env',
-                  {
-                    useBuiltIns: 'usage',
-                    corejs: 3
-                  }
-                ],
+                '@babel/preset-env',
                 [
                   '@babel/preset-react',
                   {
