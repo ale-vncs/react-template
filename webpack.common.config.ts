@@ -4,27 +4,34 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import ESLintPlugin from 'eslint-webpack-plugin'
 import { alias } from './webpack.alias.config'
 import webpackEnv from './webpack.env.config'
+import { resolve } from 'path'
+import { path } from './webpack.path.config'
 
 const config = (env: 'development' | 'production'): webpack.Configuration => {
   const isDev = env === 'development'
+
   return {
     entry: './src/index.tsx',
     output: {
-      publicPath: webpackEnv.PUBLIC_URL
+      pathinfo: isDev,
+      path: resolve(__dirname, 'build'),
+      publicPath: '/',
+      assetModuleFilename: 'static/media/[name].[hash][ext]'
     },
     module: {
       rules: [
         {
-          test: /\.(ts|js)x?$/,
+          test: /\.(ts|js)x?$/i,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
             options: {
+              cacheCompression: false,
               cacheDirectory: true,
               babelrc: false,
               presets: [
-                '@babel/preset-typescript',
                 '@babel/preset-env',
+                '@babel/preset-typescript',
                 [
                   '@babel/preset-react',
                   {
@@ -35,7 +42,13 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
               plugins: [
                 '@babel/plugin-proposal-object-rest-spread',
                 '@babel/plugin-proposal-class-properties',
-                isDev && require.resolve('react-refresh/babel')
+                isDev && require.resolve('react-refresh/babel'),
+                [
+                  '@babel/plugin-transform-runtime',
+                  {
+                    regenerator: true
+                  }
+                ]
               ].filter(Boolean)
             }
           }
@@ -56,7 +69,7 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
       ]
     },
     resolve: {
-      extensions: ['.tsx', '.ts', '.js', '.jsx'],
+      extensions: ['.tsx', '.ts', '.js'],
       alias: alias,
       fallback: {
         net: false
@@ -70,44 +83,52 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
     plugins: [
       new HtmlWebpackPlugin({
         template: 'src/index.html',
+        favicon: 'src/assets/favicon.png',
         inject: true
       }),
       new ForkTsCheckerWebpackPlugin({
         typescript: {
           mode: 'write-references',
           diagnosticOptions: {
-            semantic: true,
             syntactic: true
+          },
+          context: path.appPath,
+          configOverwrite: {
+            compilerOptions: {
+              sourceMap: isDev,
+              skipLibCheck: true,
+              inlineSourceMap: false,
+              declarationMap: false,
+              incremental: true,
+              noEmit: true,
+              tsBuildInfoFile: path.tsBuildInfoFile
+            }
           }
         },
-        async: false
+        async: isDev
       }),
       new ESLintPlugin({
-        extensions: ['js', 'jsx', 'ts', 'tsx']
+        extensions: ['js', 'jsx', 'ts', 'tsx'],
+        cache: true,
+        cacheLocation: path.eslintCache,
+        context: path.appSrc,
+        cwd: path.appPath,
+        resolvePluginsRelativeTo: __dirname,
+        failOnError: !isDev
       }),
       new webpack.DefinePlugin({
         'process.env': JSON.stringify({
           NODE_ENV: env,
           ...webpackEnv
         })
+      }),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^\.\/locale$/,
+        contextRegExp: /moment$/
       })
     ],
     performance: {
       hints: false
-    },
-    optimization: {
-      emitOnErrors: true,
-      moduleIds: 'deterministic',
-      runtimeChunk: 'single',
-      splitChunks: {
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all'
-          }
-        }
-      }
     }
   }
 }
