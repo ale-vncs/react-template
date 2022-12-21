@@ -63,6 +63,7 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
         },
         {
           test: /\.json$/i,
+          exclude: /node_modules/,
           loader: 'json5-loader',
           type: 'javascript/auto'
         }
@@ -70,16 +71,11 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
     },
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
-      alias: alias,
+      alias,
       fallback: {
         net: false
       }
     },
-    ignoreWarnings: [
-      {
-        module: /react-icons/
-      }
-    ],
     plugins: [
       new HtmlWebpackPlugin({
         template: 'src/index.html',
