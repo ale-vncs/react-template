@@ -7,6 +7,8 @@ import { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-serv
 import webpackEnv from './webpack.env.config'
 import { join } from 'path'
 import { path } from './webpack.path.config'
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
+import ESLintPlugin from 'eslint-webpack-plugin'
 
 interface Configuration extends WebpackConfiguration {
   devServer?: WebpackDevServerConfiguration
@@ -27,7 +29,6 @@ const config: Configuration = merge(webpackCommonConfig('development'), {
     filename: 'static/js/bundle.js',
     chunkFilename: 'static/js/[name].chunk.js'
   },
-  plugins: [new ReactRefreshWebpackPlugin({ overlay: false })],
   devtool: 'cheap-module-source-map',
   devServer: {
     static: {
@@ -61,6 +62,36 @@ const config: Configuration = merge(webpackCommonConfig('development'), {
       config: [__filename]
     }
   },
+  plugins: [
+    new ReactRefreshWebpackPlugin({ overlay: false }),
+    new ForkTsCheckerWebpackPlugin({
+      typescript: {
+        mode: 'readonly',
+        context: path.appPath,
+        configOverwrite: {
+          compilerOptions: {
+            sourceMap: false,
+            skipLibCheck: true,
+            inlineSourceMap: false,
+            declarationMap: false,
+            incremental: true,
+            noEmit: true,
+            tsBuildInfoFile: path.tsBuildInfoFile
+          }
+        }
+      },
+      async: true
+    }),
+    new ESLintPlugin({
+      extensions: ['js', 'jsx', 'ts', 'tsx'],
+      cache: true,
+      cacheLocation: path.eslintCache,
+      context: path.appSrc,
+      cwd: path.appPath,
+      resolvePluginsRelativeTo: __dirname,
+      failOnError: false
+    })
+  ],
   optimization: {
     minimize: false
   }

@@ -1,11 +1,8 @@
 import webpack from 'webpack'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
-import ESLintPlugin from 'eslint-webpack-plugin'
 import { alias } from './webpack.alias.config'
 import webpackEnv from './webpack.env.config'
 import { resolve } from 'path'
-import { path } from './webpack.path.config'
 
 const config = (env: 'development' | 'production'): webpack.Configuration => {
   const isDev = env === 'development'
@@ -82,36 +79,6 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
         favicon: 'src/assets/favicon.png',
         inject: true
       }),
-      new ForkTsCheckerWebpackPlugin({
-        typescript: {
-          mode: 'write-references',
-          diagnosticOptions: {
-            syntactic: true
-          },
-          context: path.appPath,
-          configOverwrite: {
-            compilerOptions: {
-              sourceMap: isDev,
-              skipLibCheck: true,
-              inlineSourceMap: false,
-              declarationMap: false,
-              incremental: true,
-              noEmit: true,
-              tsBuildInfoFile: path.tsBuildInfoFile
-            }
-          }
-        },
-        async: isDev
-      }),
-      new ESLintPlugin({
-        extensions: ['js', 'jsx', 'ts', 'tsx'],
-        cache: true,
-        cacheLocation: path.eslintCache,
-        context: path.appSrc,
-        cwd: path.appPath,
-        resolvePluginsRelativeTo: __dirname,
-        failOnError: !isDev
-      }),
       new webpack.DefinePlugin({
         'process.env': JSON.stringify({
           NODE_ENV: env,
@@ -123,6 +90,9 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
         contextRegExp: /moment$/
       })
     ],
+    watchOptions: {
+      ignored: /node_modules/
+    },
     performance: {
       hints: false
     }
