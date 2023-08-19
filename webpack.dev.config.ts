@@ -5,10 +5,8 @@ import merge from 'webpack-merge'
 import { Configuration as WebpackConfiguration } from 'webpack'
 import { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server'
 import webpackEnv from './webpack.env.config'
-import { join } from 'path'
 import { path } from './webpack.path.config'
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
-import ESLintPlugin from 'eslint-webpack-plugin'
+import { resolve } from 'path'
 
 interface Configuration extends WebpackConfiguration {
   devServer?: WebpackDevServerConfiguration
@@ -16,7 +14,7 @@ interface Configuration extends WebpackConfiguration {
 
 const openInBrowser = webpackEnv.OPEN_IN_BROWSER === 'true'
 
-const createEnvHash = (env: any) => {
+const createEnvHash = (env: unknown) => {
   const hash = createHash('md5')
   hash.update(JSON.stringify(env))
 
@@ -27,14 +25,11 @@ const config: Configuration = merge(webpackCommonConfig('development'), {
   mode: 'development',
   output: {
     filename: 'static/js/bundle.js',
+    path: resolve(__dirname, 'public'),
     chunkFilename: 'static/js/[name].chunk.js'
   },
   devtool: 'cheap-module-source-map',
   devServer: {
-    static: {
-      publicPath: '/',
-      directory: join(__dirname, 'build')
-    },
     historyApiFallback: true,
     port: webpackEnv.PORT,
     open: openInBrowser,
@@ -62,36 +57,7 @@ const config: Configuration = merge(webpackCommonConfig('development'), {
       config: [__filename]
     }
   },
-  plugins: [
-    new ReactRefreshWebpackPlugin({ overlay: false }),
-    new ForkTsCheckerWebpackPlugin({
-      typescript: {
-        mode: 'readonly',
-        context: path.appPath,
-        configOverwrite: {
-          compilerOptions: {
-            sourceMap: false,
-            skipLibCheck: true,
-            inlineSourceMap: false,
-            declarationMap: false,
-            incremental: true,
-            noEmit: true,
-            tsBuildInfoFile: path.tsBuildInfoFile
-          }
-        }
-      },
-      async: true
-    }),
-    new ESLintPlugin({
-      extensions: ['js', 'jsx', 'ts', 'tsx'],
-      cache: true,
-      cacheLocation: path.eslintCache,
-      context: path.appSrc,
-      cwd: path.appPath,
-      resolvePluginsRelativeTo: __dirname,
-      failOnError: false
-    })
-  ],
+  plugins: [new ReactRefreshWebpackPlugin({ overlay: false })],
   optimization: {
     minimize: false
   }

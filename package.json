@@ -5,8 +5,8 @@
   "scripts": {
     "start": "webpack serve --config webpack.dev.config.ts",
     "build": "webpack --config webpack.prod.config.ts",
-    "lint": "eslint src/**/*.{js,ts,tsx} --quiet",
-    "lint:fix": "eslint src/**/*.{js,ts,tsx} --quiet --fix",
+    "eslint": "eslint src/**/*.{js,ts,tsx} --quiet",
+    "eslint:fix": "eslint src/**/*.{js,ts,tsx} --quiet --fix",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write ."
   },
@@ -31,6 +31,7 @@
     "@typescript-eslint/parser": "5.47.0",
     "babel-loader": "9.1.2",
     "clean-webpack-plugin": "4.0.0",
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "6.7.1",
     "dotenv": "16.0.1",
     "eslint": "8.30.0",

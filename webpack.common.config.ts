@@ -2,7 +2,6 @@ import webpack from 'webpack'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { alias } from './webpack.alias.config'
 import webpackEnv from './webpack.env.config'
-import { resolve } from 'path'
 
 const config = (env: 'development' | 'production'): webpack.Configuration => {
   const isDev = env === 'development'
@@ -11,8 +10,6 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
     entry: './src/index.tsx',
     output: {
       pathinfo: isDev,
-      path: resolve(__dirname, 'build'),
-      publicPath: '/',
       assetModuleFilename: 'static/media/[name].[hash][ext]'
     },
     module: {
@@ -75,9 +72,7 @@ const config = (env: 'development' | 'production'): webpack.Configuration => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: 'src/index.html',
-        favicon: 'src/assets/favicon.png',
-        inject: true
+        template: 'public/index.html'
       }),
       new webpack.DefinePlugin({
         'process.env': JSON.stringify({
